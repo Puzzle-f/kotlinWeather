@@ -4,25 +4,34 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.androidwithkotlin.model.Repository
 import com.example.androidwithkotlin.model.RepositoryImpl
+import com.example.androidwithkotlin.model.Weather
 import java.lang.Thread.sleep
 
-class MainViewModel(
-    private val liveDataToObserve: MutableLiveData<AppState> = MutableLiveData(),
+class MainViewModel(    // подписываемся на неё
+    private val liveDataToObserve: MutableLiveData<AppState> = MutableLiveData(),   // данные на которые подписываемся
     private val repositoryImpl: Repository = RepositoryImpl() // возвращает погоду
 ) :
-    ViewModel() {
+    ViewModel() { // возвращаемый тип
 
     fun getLiveData() = liveDataToObserve
 
-    fun getWeatherFromLocalSource() = getDataFromLocalSource() // получение данных
+    fun getWeatherFromLocalSourceRus() = getDataFromLocalSource(true) // получение данных
 
-    fun getWeatherFromRemoteSource() = getDataFromLocalSource()
+    fun getWeatherFromLocalSourceWorld() = getDataFromLocalSource(false)
 
-    private fun getDataFromLocalSource() {          // получение данных
-        liveDataToObserve.value = AppState.Loading  // имитация состояния загрузки
+    fun getWeatherFromRemoteSource() = getDataFromLocalSource(true)
+
+    private fun getDataFromLocalSource(isRussian: Boolean) {
+        liveDataToObserve.value = AppState.Loading
         Thread {
             sleep(1000)
-            liveDataToObserve.postValue(AppState.Success(repositoryImpl.getWeatherFromLocalStorage()))  // получение данных непосредств
+            val listWeather: List<Weather> = if (isRussian) // если изменились данные
+                repositoryImpl.getWeatherFromLocalStorageRus()
+            else
+                repositoryImpl.getWeatherFromLocalStorageWorld()
+
+            liveDataToObserve.postValue(AppState.Success(listWeather))
         }.start()
     }
+
 }
