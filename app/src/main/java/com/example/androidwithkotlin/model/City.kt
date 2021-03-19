@@ -9,3 +9,6 @@ data class City(
     val lat: Double,
     val lon: Double
 ) : Parcelable
+
+
+
