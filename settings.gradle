@@ -1,2 +1,3 @@
+include ':myapplicationthread'
 include ':app'
 rootProject.name = "Android With Kotlin"
